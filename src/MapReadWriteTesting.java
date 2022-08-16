@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -17,42 +18,39 @@ public abstract class MapReadWriteTesting {
     public void startReadingWriting(int size) {
         System.out.println(mapType + " " + size + " элементов");
 
-        long start = System.currentTimeMillis();
-
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         try {
-            Future<?> put = executorService.submit(() -> {
+            Thread put = new Thread(() -> {
+                long start = System.currentTimeMillis();
+
                 for (int a = 0; a < size; a++) {
                     map.put(a, a);
                 }
+                long end = System.currentTimeMillis();
+                System.out.println("Вставка " + (end - start));
+
             });
 
 
-            put.get();
-
-            long end = System.currentTimeMillis();
-            System.out.println("Вставка " + (end - start));
-
-            start = System.currentTimeMillis();
-            Future<?> read = executorService.submit(() -> {
-                for (Map.Entry<Integer, Integer> pairs : map.entrySet()) {
-                    pairs.getKey();
-                    pairs.getValue();
+            Thread read = new Thread(() -> {
+                long start = System.currentTimeMillis();
+                Iterator<Map.Entry<Integer, Integer>> iterator = map.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    iterator.next();
                 }
+                long end = System.currentTimeMillis();
+                System.out.println("Чтение " + (end - start));
+
             });
-            read.get();
-            end = System.currentTimeMillis();
+            put.start();
+            Thread.sleep(200);
+            read.start();
+            put.join();
+            read.join();
 
-            System.out.println("Чтение: " + (end - start));
-
-        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("----------------------");
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
-        executorService.shutdown();
-        System.out.println("----------------------");
     }
 }
-
