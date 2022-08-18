@@ -1,56 +1,83 @@
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public abstract class MapReadWriteTesting {
     private Map<Integer, Integer> map;
-    private String mapType;
+    private final String mapType;
 
     public MapReadWriteTesting(String mapType, Map<Integer, Integer> map) {
         this.mapType = mapType;
         this.map = map;
     }
 
+    public MapReadWriteTesting(Map<Integer, Integer> map) {
+        this.map = map;
+        this.mapType = this.getClass().getSimpleName();
+    }
 
-    public void startReadingWriting(int size) {
-        System.out.println(mapType + " " + size + " элементов");
 
+    public void multiThreadingPut(int size) {
+        long start = System.currentTimeMillis();
+
+
+        Thread first = new Thread(() -> {
+            for (int a = 0; a <= size; a++) {
+                map.put(a, a);
+            }
+
+        });
+
+        Thread second = new Thread(() -> {
+            for (int a = 0; a <= size; a++) {
+                map.put(a, a);
+            }
+
+        });
+
+        first.start();
+        second.start();
 
         try {
-            Thread put = new Thread(() -> {
-                long start = System.currentTimeMillis();
-
-                for (int a = 0; a < size; a++) {
-                    map.put(a, a);
-                }
-                long end = System.currentTimeMillis();
-                System.out.println("Вставка " + (end - start));
-
-            });
-
-
-            Thread read = new Thread(() -> {
-                long start = System.currentTimeMillis();
-                Iterator<Map.Entry<Integer, Integer>> iterator = map.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    iterator.next();
-                }
-                long end = System.currentTimeMillis();
-                System.out.println("Чтение " + (end - start));
-
-            });
-            put.start();
-            Thread.sleep(200);
-            read.start();
-            put.join();
-            read.join();
-
-            System.out.println("----------------------");
+            first.join();
+            second.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        long end = System.currentTimeMillis();
+        System.out.println(mapType + " Вставка:" + size + " эл.= " + (end - start) + "мс");
+
     }
+
+    public void multiThreadingRead(int size) {
+        System.out.println(mapType + " " + size + " элементов");
+        long start = System.currentTimeMillis();
+
+
+        Thread first = new Thread(() -> {
+            Iterator<Map.Entry<Integer, Integer>> iterator = map.entrySet().iterator();
+            while (iterator.hasNext()) {
+                iterator.next();
+            }
+        });
+        Thread second = new Thread(() -> {
+            Iterator<Map.Entry<Integer, Integer>> iterator = map.entrySet().iterator();
+            while (iterator.hasNext()) {
+                iterator.next();
+            }
+        });
+        first.start();
+        second.start();
+
+        try {
+            first.join();
+            second.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        long end = System.currentTimeMillis();
+        System.out.println("Чтение " + (end - start));
+    }
+
 }

@@ -11,20 +11,15 @@ public class Main {
 
         MapReadWriteTesting concurrentMap = new WorkWithConcurrentMap("Потокобезопасная мапа",
                 new ConcurrentHashMap<>());
-        Map<Integer, Integer> map = Collections.synchronizedMap(new HashMap<>());
 
-        for (Map.Entry<Integer, Integer> pairs : map.entrySet()) {
-            pairs.getKey();
-            pairs.getValue();
-        }
+        for (int a = 1; a < 1_000_000; a *= 10) {
+            synchronizedMap.multiThreadingPut(a);
 
-        for (int a = 1; a <= 1_000_000; a *= 10) {
-            synchronizedMap.startReadingWriting(a);
-        }
-        for (int a = 1; a <= 1_000_000; a *= 10) {
-            concurrentMap.startReadingWriting(a);
+            concurrentMap.multiThreadingPut(a);
+            System.out.println("---------------");
         }
     }
+
 }
 
 
