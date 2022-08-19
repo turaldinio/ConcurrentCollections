@@ -1,4 +1,7 @@
-import java.util.ConcurrentModificationException;
+package Maps;
+
+import DrawAndLog.LogWriter;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -11,13 +14,9 @@ public abstract class MapReadWriteTesting {
         this.map = map;
     }
 
-    public MapReadWriteTesting(Map<Integer, Integer> map) {
-        this.map = map;
-        this.mapType = this.getClass().getSimpleName();
-    }
 
-
-    public void multiThreadingPut(int size) {
+    public int multiThreadingPut(int size) {
+        LogWriter writer = LogWriter.getInstance();
         long start = System.currentTimeMillis();
 
 
@@ -46,13 +45,13 @@ public abstract class MapReadWriteTesting {
         }
 
         long end = System.currentTimeMillis();
-        System.out.printf("%s: Вставка %d элементов %d мс%n", mapType, size, (end - start));
-        multiThreadingRead(size);
 
-
+        writer.writeResult(mapType, "вставка", size, (int) (end - start));
+        return (int) (end - start);
     }
 
-    public void multiThreadingRead(int size) {
+    public int multiThreadingRead(int size) {
+        LogWriter writer = LogWriter.getInstance();
         long start = System.currentTimeMillis();
 
 
@@ -81,7 +80,8 @@ public abstract class MapReadWriteTesting {
         }
 
         long end = System.currentTimeMillis();
-        System.out.printf("%s: Чтение %d элементов %d мс%n", mapType, size, (end - start));
+        writer.writeResult(mapType, "чтение", size, (int) (end - start));
+        return (int) (end - start);
     }
 
 }

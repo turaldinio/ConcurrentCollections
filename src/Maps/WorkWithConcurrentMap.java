@@ -1,3 +1,5 @@
+package Maps;
+
 import java.util.Map;
 
 public class WorkWithConcurrentMap extends MapReadWriteTesting {

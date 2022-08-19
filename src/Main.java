@@ -1,26 +1,20 @@
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.*;
+import DrawAndLog.Chart;
+
+import javax.swing.*;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        Chart chart = new Chart(
+                "Visualization",
+                "ConcurrentCollections vs Collections.synchronized");
 
-        MapReadWriteTesting synchronizedMap = new WorkWithSynchronizedMap("SynchronizedMap",
-                Collections.synchronizedMap(new HashMap<>()));
-
-        MapReadWriteTesting concurrentMap = new WorkWithConcurrentMap("ConcurrentHasMap",
-                new ConcurrentHashMap<>());
+        chart.pack();
+        chart.setVisible(true);
+        chart.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 
-        for (int a = 1; a <= 1_000_000; a *= 10) {
-            synchronizedMap.multiThreadingPut(a);
-
-            concurrentMap.multiThreadingPut(a);
-            System.out.println("---------------");
-        }
     }
 
 }
