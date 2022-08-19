@@ -1,3 +1,4 @@
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public abstract class MapReadWriteTesting {
         });
 
         Thread second = new Thread(() -> {
-            for (int a = 0; a <= size; a++) {
+            for (int a = size; a >= 0; a--) {
                 map.put(a, a);
             }
 
@@ -45,19 +46,22 @@ public abstract class MapReadWriteTesting {
         }
 
         long end = System.currentTimeMillis();
-        System.out.println(mapType + " Вставка:" + size + " эл.= " + (end - start) + "мс");
+        System.out.printf("%s: Вставка %d элементов %d мс%n", mapType, size, (end - start));
+        multiThreadingRead(size);
+
 
     }
 
     public void multiThreadingRead(int size) {
-        System.out.println(mapType + " " + size + " элементов");
         long start = System.currentTimeMillis();
 
 
         Thread first = new Thread(() -> {
             Iterator<Map.Entry<Integer, Integer>> iterator = map.entrySet().iterator();
             while (iterator.hasNext()) {
+
                 iterator.next();
+
             }
         });
         Thread second = new Thread(() -> {
@@ -77,7 +81,7 @@ public abstract class MapReadWriteTesting {
         }
 
         long end = System.currentTimeMillis();
-        System.out.println("Чтение " + (end - start));
+        System.out.printf("%s: Чтение %d элементов %d мс%n", mapType, size, (end - start));
     }
 
 }
